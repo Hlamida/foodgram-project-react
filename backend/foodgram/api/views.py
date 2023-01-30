@@ -14,9 +14,9 @@ from rest_framework.views import APIView
 from api.permissions import (IsAdminOnly, IsAdminUserOrReadOnly,
                              IsOwnerAdminOrReadOnly)
 from api.serializers import ( 
-    TagSerializer, RecipeSerialzer, UserSerializer
+    IngredientSerializer, TagSerializer, RecipeSerialzer, UserSerializer
 )
-from recipes.models import Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 from users.models import User
 
 
@@ -28,19 +28,26 @@ class TagsViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
 
+class IngredientViewSet(viewsets.ModelViewSet):
+    """Работа с ингредиентами."""
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (AllowAny,)
+
 class RecipesViewSet(viewsets.ModelViewSet):
     """Работа с рецептами."""
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerialzer
-    #permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)
 
-    def perform_create(self, serializer):
-        """Передает сериализатору автора рецепта."""
-
-        serializer.save(
-            author=self.request.user,
-        )
+    #def perform_create(self, serializer):
+    #    """Передает сериализатору автора рецепта."""
+#
+    #    serializer.save(
+    #        author=self.request.user,
+    #    )
 
 #class GetTokenViewSet(viewsets.ModelViewSet):
 #    """Получение токена."""

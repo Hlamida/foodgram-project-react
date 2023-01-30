@@ -3,13 +3,14 @@ from django.conf.urls.static import static
 from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
 
-from api.views import RecipesViewSet, TagsViewSet
+from api.views import IngredientViewSet, RecipesViewSet, TagsViewSet
 
 app_name = 'api'
 
 router = DefaultRouter()
 router.register('tags', TagsViewSet, basename='tags')
 router.register('recipes', RecipesViewSet, basename='recipes')
+router.register('ingredients', IngredientViewSet, basename='ingredients')
 #router.register(
 #    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
 #    CommentsViewSet,

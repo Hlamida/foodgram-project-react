@@ -17,7 +17,7 @@ class Ingredient(models.Model):
         verbose_name='Название',
     )
 
-    quantity = models.IntegerField(
+    amount = models.IntegerField(
         validators=(
             MinValueValidator(
                 MIN_QUANTITY,
@@ -31,10 +31,11 @@ class Ingredient(models.Model):
         verbose_name='Количество',
     )
 
-    measurement_units = models.CharField(
-        max_length=10,
+    measurement_unit = models.CharField(
+        max_length=200,
         blank=False,
         null=False,
+        default='гр.',
         verbose_name='Единицы измерения',
     )
 
@@ -88,23 +89,19 @@ class Recipe(models.Model):
         User,  # Дописать, что это автор рецепта
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        related_name='recipe',
+        related_name='author',
     )
 
-    # is_favorited = EnumChoiceField(Includes, default=Includes.not_included)
-
-    #is_in_shopping_cart = EnumChoiceField(
-    #    Includes, default=Includes.not_included
-    #)
-
-    is_favorited = models.BooleanField(default=False)
-
-    is_in_shopping_cart = models.BooleanField(default=False)
+    is_favorited = EnumChoiceField(Includes, default=Includes.not_included)
+    is_in_shopping_cart = EnumChoiceField(
+        Includes, default=Includes.not_included
+    )
 
     ingredients = models.ManyToManyField( # Array of objects (IngredientInRecipe)
         Ingredient,
         through='RecipeIngredients',
         verbose_name='Список ингредиентов',
+        related_name='ingredients',
     )
 
     name = models.CharField(
@@ -147,6 +144,9 @@ class RecipeIngredients(models.Model):
 
     ingredients = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class RecipeTags(models.Model):
