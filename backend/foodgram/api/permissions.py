@@ -17,7 +17,7 @@ class IsAdminOnly(permissions.BasePermission):
         )
 
 
-class IsAdminUserOrReadOnly(permissions.BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
     """Разрешает просмотр всем, изменения - только админу."""
 
     def has_permission(self, request, view):
@@ -34,12 +34,17 @@ class IsAdminUserOrReadOnly(permissions.BasePermission):
         )
 
 
-class IsOwnerAdminOrReadOnly(permissions.BasePermission):
-    """Разрешает изменение только автору или админу."""
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    """Разрешает изменение только автору."""
+
+    def has_permission(self, request, view):
+        return (
+            request.method in permissions.SAFE_METHODS
+            or request.user.is_authenticated
+        )
 
     def has_object_permission(self, request, view, obj):
         return (
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
-            or request.user.is_admin
         )

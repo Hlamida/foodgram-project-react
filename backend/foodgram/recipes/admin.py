@@ -5,8 +5,14 @@ from django.contrib import admin
 from recipes.models import Ingredient, Recipe, Tag
 
 
+#class RecipeInline(admin.TabularInline):
+#    model = Recipe
+
+
 class TagAdmin(admin.ModelAdmin):
     """Определяет структуру вывода информации о тегах."""
+
+   # inlines = [RecipeInline,]
 
     list_display = (
         'id',
@@ -32,31 +38,15 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class RecipeInline(admin.TabularInline):
-    model = Recipe
+#class IngredientInline(admin.TabularInline):
+#    model = Ingredient
+#    #fk_name = 'recipe_test'
 
 
-class TagInline(admin.TabularInline):
-    model = Tag
-    fk_name = 'recipe'
+#class TagInline(admin.TabularInline):
+#    model = Tag
+    #fk_name = 'recipe'
 
-
-#class RecipeAdmin(admin.ModelAdmin):
-#    """Определяет структуру вывода информации о рецептах."""
-#
-#    inlines = [
-#        RecipeInline,
-#        TagInline,
-#    ]
-
-    #list_display = (
-    #    'id',
-    #    'author',
-    #    'name',
-    #    'text',
-    #    'cooking_time',
-    #)
-    #search_fields = ('name',)
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
