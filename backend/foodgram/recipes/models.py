@@ -6,7 +6,6 @@ from enumchoicefield import ChoiceEnum, EnumChoiceField
 from recipes.constants import (
     MIN_COOKING_TIME,
     MIN_QUANTITY,
-    MIN_COLOR_LEN,
 )
 from users.models import User
 from users.validators import validate_hex
@@ -45,6 +44,9 @@ class Ingredient(models.Model):
         verbose_name='Единицы измерения',
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Tag(models.Model):
     """Модель тегов."""
@@ -73,56 +75,30 @@ class Tag(models.Model):
         verbose_name='Уникальный слаг',
     )
 
-
-#class Includes(ChoiceEnum):
-#    """Модель для включения в списки."""
-#
-#    included = 'Включён'
-#    not_included = 'Не включён'
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
     """Модель рецептов."""
 
-    #tags = models.ForeignKey( #Array of objects (Tag)
-    #    Tag,
-    #    #through='RecipeTags',
-    #    on_delete=models.CASCADE,
-    #    blank=True,
-    #    null=True,
-    #    verbose_name='Тег',
-    #    related_name='tag',
-    #)
-
     tags = models.ManyToManyField(
         Tag,
+        through='RecipeTags',
         verbose_name='Тег',
         related_name='recipe',
-        through='RecipeTags',
     )
 
     author = models.ForeignKey(
-        User,  # Дописать, что это автор рецепта
+        User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
         related_name='recipe',
     )
 
-    #is_favorited = EnumChoiceField(Includes, default=Includes.not_included)
-    #is_in_shopping_cart = EnumChoiceField(
-    #    Includes, default=Includes.not_included
-    #)
-
-    # is_favorited = models.BooleanField(default=False)
-
-    # is_in_shopping_cart = models.BooleanField(default=False)
-
-    ingredients = models.ForeignKey( # Array of objects (IngredientInRecipe)
+    ingredients = models.ManyToManyField(
         Ingredient,
-        #through='RecipeIngredients',
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
+        through='RecipeIngredients',
         verbose_name='Список ингредиентов',
         related_name='recipe',
     )
@@ -138,7 +114,9 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/images/',
         null=True,
-        default=None
+        blank=True,
+        default=None,
+        verbose_name='Картинка рецепта',
     )
 
     text = models.TextField(
@@ -162,19 +140,22 @@ class Recipe(models.Model):
         verbose_name='Время приготовления (в минутах)',
     )
 
+    def __str__(self):
+        return self.name
+
 
 class RecipeIngredients(models.Model):
     """Модель для связи рецептов с ингредиентами."""
 
-    ingredients = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredient',
+        related_name='recipe_ingredients',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipe_test',
+        related_name='recipe_ingredients',
     )
     amount = models.IntegerField(
         validators=(
@@ -185,14 +166,9 @@ class RecipeIngredients(models.Model):
                 ''',
             ),
         ),
-        blank=False,
-        null=False,
-        default=0,
+        default=MIN_QUANTITY,
         verbose_name='Количество',
     )
-
-    def __str__(self):
-        return self.name
 
 
 class RecipeTags(models.Model):
@@ -200,9 +176,6 @@ class RecipeTags(models.Model):
 
     tags = models.ForeignKey(Tag, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
 
 class Favorite(models.Model):
@@ -221,5 +194,31 @@ class Favorite(models.Model):
         related_name='favorite',
     )
     UniqueConstraint(
-        fields=['user', 'recipe'], name='unique_followers'
+        fields=['user', 'recipe'], name='unique_favorites'
     )
+
+    def __str__(self):
+        return self.name
+
+
+class Cart(models.Model):
+    """Определяет модель корзины покупок."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        related_name='cart',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        related_name='cart',
+    )
+    UniqueConstraint(
+        fields=['user', 'recipe'], name='unique_cart'
+    )
+
+    def __str__(self):
+        return self.name
