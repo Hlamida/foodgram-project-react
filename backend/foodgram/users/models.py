@@ -63,5 +63,6 @@ class Follow(models.Model):
         related_name='following',
     )
     UniqueConstraint(
-        fields=['user', 'author'], name='unique_followers'
+        fields=['user', 'author'],
+        name='unique_followers',
     )

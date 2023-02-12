@@ -1,5 +1,6 @@
+from djoser.serializers import \
+    UserCreateSerializer as BaseUserRegistrationSerializer
 from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 
 from recipes.models import Recipe
 from users.models import Follow, User
@@ -46,11 +47,21 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор подписок."""
 
-    id = serializers.ReadOnlyField(source='author.id')
-    email = serializers.ReadOnlyField(source='author.email')
-    username = serializers.ReadOnlyField(source='author.username')
-    first_name = serializers.ReadOnlyField(source='author.first_name')
-    last_name = serializers.ReadOnlyField(source='author.last_name')
+    id = serializers.ReadOnlyField(
+        source='author.id',
+    )
+    email = serializers.ReadOnlyField(
+        source='author.email',
+    )
+    username = serializers.ReadOnlyField(
+        source='author.username',
+    )
+    first_name = serializers.ReadOnlyField(
+        source='author.first_name',
+    )
+    last_name = serializers.ReadOnlyField(
+        source='author.last_name',
+    )
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -70,13 +81,11 @@ class FollowSerializer(serializers.ModelSerializer):
     def get_recipes(self, obj):
         """Определение поля recipes."""
 
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[:int(limit)]
-
-        return GetRecipeSerializer(queryset, many=True).data
+        queryset = Recipe.objects.filter(author=obj)
+        return GetRecipeSerializer(
+            queryset,
+            many=True
+        ).data
 
     def get_recipes_count(self, obj):
         """Определение поля recipes_count."""

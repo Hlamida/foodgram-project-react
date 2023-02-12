@@ -1,12 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-from enumchoicefield import ChoiceEnum, EnumChoiceField
 
-from recipes.constants import (
-    MIN_COOKING_TIME,
-    MIN_QUANTITY,
-)
+from recipes.constants import MIN_COOKING_TIME, MIN_QUANTITY
 from users.models import User
 from users.validators import validate_hex
 
@@ -22,20 +18,6 @@ class Ingredient(models.Model):
         verbose_name='Название',
     )
 
-    amount = models.IntegerField(
-        validators=(
-            MinValueValidator(
-                MIN_QUANTITY,
-                message=f'''
-                Количество не может быть меньше {MIN_QUANTITY}
-                ''',
-            ),
-        ),
-        blank=False,
-        null=False,
-        verbose_name='Количество',
-    )
-
     measurement_unit = models.CharField(
         max_length=200,
         blank=False,
@@ -43,6 +25,9 @@ class Ingredient(models.Model):
         default='гр.',
         verbose_name='Единицы измерения',
     )
+
+    class Meta:
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -75,6 +60,9 @@ class Tag(models.Model):
         verbose_name='Уникальный слаг',
     )
 
+    class Meta:
+        ordering = ('slug',)
+
     def __str__(self):
         return self.name
 
@@ -86,21 +74,21 @@ class Recipe(models.Model):
         Tag,
         through='RecipeTags',
         verbose_name='Тег',
-        related_name='recipe',
+        related_name='recipes',
     )
 
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        related_name='recipe',
+        related_name='recipes',
     )
 
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredients',
         verbose_name='Список ингредиентов',
-        related_name='recipe',
+        related_name='recipes',
     )
 
     name = models.CharField(
@@ -140,6 +128,9 @@ class Recipe(models.Model):
         verbose_name='Время приготовления (в минутах)',
     )
 
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
         return self.name
 
@@ -169,6 +160,13 @@ class RecipeIngredients(models.Model):
         default=MIN_QUANTITY,
         verbose_name='Количество',
     )
+    UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='Ингредиент уже добавлен'
+            )
+
+    class Meta:
+        verbose_name = 'Ингредиенты в рецепте'
 
 
 class RecipeTags(models.Model):
@@ -179,7 +177,7 @@ class RecipeTags(models.Model):
 
 
 class Favorite(models.Model):
-    """Определяет модель для избранных рецептов ."""
+    """Модель для избранных рецептов ."""
 
     user = models.ForeignKey(
         User,
@@ -190,11 +188,13 @@ class Favorite(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        blank=False,
+        null=False,
         verbose_name='Избранный рецепт',
         related_name='favorite',
     )
     UniqueConstraint(
-        fields=['user', 'recipe'], name='unique_favorites'
+        fields=['user', 'recipe'], name='Рецепт уже в избранном'
     )
 
     def __str__(self):
@@ -202,7 +202,7 @@ class Favorite(models.Model):
 
 
 class Cart(models.Model):
-    """Определяет модель корзины покупок."""
+    """Модель корзины покупок."""
 
     user = models.ForeignKey(
         User,
@@ -217,7 +217,7 @@ class Cart(models.Model):
         related_name='cart',
     )
     UniqueConstraint(
-        fields=['user', 'recipe'], name='unique_cart'
+        fields=['user', 'recipe'], name='Рецепт уже в корзине'
     )
 
     def __str__(self):

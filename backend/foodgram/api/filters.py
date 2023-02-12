@@ -1,31 +1,42 @@
 from django_filters import rest_framework as filters
 
-from recipes.models import Recipe
+from recipes.models import Recipe, Tag
 
 
 class RecipesFilter(filters.FilterSet):
     """Класс для фильтрации рецептов."""
 
-    tag = filters.CharFilter(
-        field_name='tag__slug',
-        lookup_expr='contains',
+    tags = filters.filters.ModelMultipleChoiceFilter(
+        queryset=Tag.objects.all(),
+        field_name='tags__slug',
+        to_field_name='slug',
     )
     author = filters.CharFilter(
         field_name='author__username',
         lookup_expr='icontains',
     )
-    is_favorited = filters.NumberFilter(
+    is_favorited = filters.BooleanFilter(
         field_name='is_favorited',
-        lookup_expr='contains',
+        method='filter_is_favorited',
     )
-    is_in_shopping_cart = filters.NumberFilter(
+    is_in_shopping_cart = filters.BooleanFilter(
         field_name='is_in_shopping_cart',
-        lookup_expr='contains',
+        method='filter_is_in_shopping_cart',
     )
 
-    #class Meta:
-    #    model = Recipe
-    #    fields = {
-    #        'first_name': ['startswith'],
-    #        'last_name': ['startswith'],
-    #    }
+    def filter_is_favorited(self, queryset, value):
+        if value and not self.request.user.is_anonymous:
+            return queryset.filter(favorites__user=self.request.user)
+        return queryset
+
+    def filter_is_in_shopping_cart(self, queryset, value):
+        if value and not self.request.user.is_anonymous:
+            return queryset.filter(cart__user=self.request.user)
+        return queryset
+
+    class Meta:
+        model = Recipe
+        fields = {
+            'tags',
+            'author',
+        }

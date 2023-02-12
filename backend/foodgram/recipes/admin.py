@@ -1,29 +1,46 @@
 from django.contrib import admin
 
+from recipes.models import (Cart, Favorite, Ingredient, Recipe,
+                            RecipeIngredients, RecipeTags, Tag)
 
 
-from recipes.models import Ingredient, Recipe, Tag, RecipeIngredients, RecipeTags
+class IngredientsInline(admin.TabularInline):
+    """Включённая структура ингредиентов в рецепте."""
+
+    model = RecipeIngredients
 
 
-#class RecipeInline(admin.TabularInline):
-#    model = Recipe
+class TagsInline(admin.TabularInline):
+    """Включённая структура тегов в рецепте."""
+
+    model = RecipeTags
 
 
-class TagAdmin(admin.ModelAdmin):
-    """Определяет структуру вывода информации о тегах."""
-
-   # inlines = [RecipeInline,]
+class RecipeAdmin(admin.ModelAdmin):
+    """Определяет структуру вывода информации о рецептах."""
 
     list_display = (
-        'id',
         'name',
-        'color',
-        'slug',
+        'author',
+        'count_favorites',
     )
-    search_fields = ('name',)
-    #list_filter = ('pub_date',)
-    #list_editable = ('group',)
-    #empty_value_display = '-пусто-'
+    list_filter = (
+        'name',
+        'author',
+        'tags',
+    )
+    search_fields = (
+        'name',
+        'author',
+        'tags',
+    )
+    inlines = [
+        IngredientsInline,
+        TagsInline,
+    ]
+
+    def count_favorites(self, obj):
+        return obj.favorite.count()
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -32,40 +49,53 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
-        'amount',
         'measurement_unit',
+    )
+    list_filter = ('name',)
+    search_fields = ('name',)
+    inlines = [IngredientsInline]
+
+
+class TagAdmin(admin.ModelAdmin):
+    """Определяет структуру вывода информации о тегах."""
+
+    list_display = (
+        'id',
+        'name',
+        'color',
+        'slug',
     )
     search_fields = ('name',)
 
 
-class IngredientsInline(admin.TabularInline):
-    model = RecipeIngredients
-    extra = 1
+class CartAdmin(admin.ModelAdmin):
+    """Определяет структуру вывода информации о корзине."""
+
+    list_display = (
+        'user',
+        'recipe',
+    )
+    search_fields = (
+        'user',
+        'recipe',
+    )
 
 
-class TagsInline(admin.TabularInline):
-    model = RecipeTags
-    extra = 1
+class FavoriteAdmin(admin.ModelAdmin):
+    """Определяет структуру вывода информации об избранном."""
 
-
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', 'count_recipes_favorite')
-    list_filter = ('name', 'author', 'tags')
-    search_fields = ('name', 'author', 'tags')
-    empty_value_display = "-пусто-"
-    inlines = [
-        TagsInline, IngredientsInline
-    ]
-    readonly_fields = ['count_recipes_favorite']
-
-    def count_recipes_favorite(self, obj):
-        return obj.favorite_recipes.count()
-
-    count_recipes_favorite.short_description = 'Популярность'
+    list_display = (
+        'user',
+        'recipe',
+    )
+    search_fields = (
+        'user',
+        'recipe',
+    )
 
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-#admin.site.register(Group)
-#admin.site.register(Comment)
+admin.site.register(Cart, CartAdmin)
+admin.site.register(Favorite, FavoriteAdmin)

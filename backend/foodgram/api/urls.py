@@ -13,14 +13,6 @@ router.register(r'users', SubscribeViewSet, basename='users')
 router.register('tags', TagsViewSet, basename='tags')
 router.register('recipes', RecipesViewSet, basename='recipes')
 router.register('ingredients', IngredientViewSet, basename='ingredients')
-#router.register(
-#    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
-#    CommentsViewSet,
-#   basename='comments',
-#)
-#router.register('categories', CategoriesViewSet, basename='сategories')
-#router.register('titles', TitlesViewSet, basename='titles')
-#router.register('genres', GenresViewSet, basename='genres')
 
 urlpatterns = [
     path(
@@ -32,6 +24,3 @@ urlpatterns = [
     path('', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
