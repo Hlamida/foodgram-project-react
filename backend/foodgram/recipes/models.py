@@ -160,13 +160,15 @@ class RecipeIngredients(models.Model):
         default=MIN_QUANTITY,
         verbose_name='Количество',
     )
-    UniqueConstraint(
-                fields=['recipe', 'ingredient'],
-                name='Ингредиент уже добавлен'
-            )
 
     class Meta:
         verbose_name = 'Ингредиенты в рецепте'
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='Ингредиент уже добавлен',
+            )
+        ]
 
 
 class RecipeTags(models.Model):
@@ -193,12 +195,13 @@ class Favorite(models.Model):
         verbose_name='Избранный рецепт',
         related_name='favorite',
     )
-    UniqueConstraint(
-        fields=['user', 'recipe'], name='Рецепт уже в избранном'
-    )
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'], name='Рецепт уже в избранном'
+            )
+        ]
 
 
 class Cart(models.Model):
@@ -216,9 +219,10 @@ class Cart(models.Model):
         verbose_name='Рецепт',
         related_name='cart',
     )
-    UniqueConstraint(
-        fields=['user', 'recipe'], name='Рецепт уже в корзине'
-    )
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'], name='Рецепт уже в корзине'
+            )
+        ]
