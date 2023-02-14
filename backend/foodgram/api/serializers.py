@@ -113,6 +113,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
                     'Ингредиент уже добавлен'
                 )
             ingredient_list.append(ingredient)
+            # Идея листа была в учёте ингредиентов и отсечке повторяющихся
         obj['ingredients'] = ingredients
         return obj
 
@@ -254,7 +255,6 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ('id', 'cooking_time', 'name', 'image')
 
-###########################
 
 class FavoritedSerializer(serializers.ModelSerializer):
     id = serializers.CharField(
@@ -269,20 +269,6 @@ class FavoritedSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         read_only=True, source='recipe.name',
     )
-
-    def validate(self, data):
-        recipe = data['recipe']
-        user = data['user']
-        if user == recipe.author:
-            raise serializers.ValidationError('You are the author!')
-        if (Favorite.objects.filter(recipe=recipe, user=user).exists()):
-            raise serializers.ValidationError('You have already subscribed!')
-        return data
-
-    def create(self, validated_data):
-        favorite = Favorite.objects.create(**validated_data)
-        favorite.save()
-        return favorite
 
     class Meta:
         model = Favorite
