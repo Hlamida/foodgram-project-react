@@ -113,8 +113,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
                     'Ингредиент уже добавлен'
                 )
             ingredient_list.append(ingredient)
-            # Идея листа была в учёте ингредиентов и отсечке повторяющихся
         obj['ingredients'] = ingredients
+
         return obj
 
     def add_ingredients(self, ingredients, recipe):
@@ -152,6 +152,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         ).delete()
         self.add_ingredients(ingredients_data, instance)
         instance.save()
+
         return instance
 
 
@@ -191,48 +192,51 @@ class FollowRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
+class GetRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор рецептов для подписок."""
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор подписок."""
 
-    id = serializers.ReadOnlyField(
-        source='author.id',
-    )
-    email = serializers.ReadOnlyField(
-        source='author.email',
-    )
-    username = serializers.ReadOnlyField(
-        source='author.username',
-    )
-    first_name = serializers.ReadOnlyField(
-        source='author.first_name',
-    )
-    last_name = serializers.ReadOnlyField(
-        source='author.last_name',
-    )
+    email = serializers.ReadOnlyField()
+    id = serializers.ReadOnlyField()
+    username = serializers.ReadOnlyField()
+    first_name = serializers.ReadOnlyField()
+    last_name = serializers.ReadOnlyField()
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Follow
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_is_subscribed(self, obj):
-        return Follow.objects.filter(
-            user=obj.user, author=obj.author
-        ).exists()
+        """Определение поля is_subscribed."""
+
+        user = self.context.get('request').user
+        return user.follower.filter(author=obj).exists()
 
     def get_recipes(self, obj):
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[:int(limit)]
-        return FollowRecipeSerializer(queryset, many=True).data
+        """Определение поля recipes."""
+
+        queryset = Recipe.objects.filter(author=obj)
+        return GetRecipeSerializer(
+            queryset,
+            many=True
+        ).data
 
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj.author).count()
+        """Определение поля recipes_count."""
+
+        return Recipe.objects.filter(author=obj).count()
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -257,6 +261,8 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class FavoritedSerializer(serializers.ModelSerializer):
+    """Сериализатор любимых рецептов."""
+
     id = serializers.CharField(
         read_only=True, source='recipe.id',
     )

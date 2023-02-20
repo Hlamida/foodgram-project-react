@@ -1,4 +1,5 @@
 from django_filters import rest_framework as filters
+from rest_framework import filters as fltrs
 
 from recipes.models import Recipe, Tag
 
@@ -40,3 +41,9 @@ class RecipesFilter(filters.FilterSet):
             'tags',
             'author',
         }
+
+
+class IngredientsFilter(fltrs.SearchFilter):
+    """Фильтр ингредиентов."""
+
+    search_param = 'name'

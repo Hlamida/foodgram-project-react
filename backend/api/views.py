@@ -5,22 +5,24 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.filters import RecipesFilter
+from api.filters import IngredientsFilter, RecipesFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (IngredientSerializer, RecipeGetSerialzer,
-                             RecipeListSerializer, TagSerializer)
+from api.serializers import (IngredientSerializer, FollowSerializer,
+                             RecipeGetSerialzer, RecipeListSerializer,
+                             TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from users.models import Follow, User
-from users.serializers import FollowSerializer
 
 
 class SubscribeViewSet(UserViewSet):
     """Реализовывает подписки пользователя."""
 
     @action(
+        methods=['POST', 'DELETE'],
         detail=True,
-        methods=['GET', 'DELETE'],
+        url_path='subscribe',
+        permission_classes=(IsAuthenticated,),
     )
     def subscribe(self, request, id):
         """Подписка на автора, удаление подписки."""
@@ -28,40 +30,60 @@ class SubscribeViewSet(UserViewSet):
         following = get_object_or_404(User, id=id)
         follower = request.user
 
-        if request.method == 'GET':
+        if request.method == 'POST':
             user = request.user
             author = get_object_or_404(User, id=id)
 
             if user == author:
-                return Response({
-                    'errors': 'Подписка на себя запрещена конвенцией о нарциссизме'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'errors':
+                     'Подписка на себя запрещена конвенцией о нарциссизме'
+                     }, status=status.HTTP_400_BAD_REQUEST
+                )
 
             if Follow.objects.filter(user=user, author=author).exists():
                 return Response({
                     'errors': f'Вы уже подписаны на {author}.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+            follow = Follow.objects.create(user=user, author=author)
+            serializer = FollowSerializer(
+                follow.author, context={'request': request}
+            )
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         if request.method == 'DELETE':
             Follow.objects.filter(
                 user=follower, author=following
             ).delete()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
+
         return Response({
             'errors': 'Вы уже отписались'
         }, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(
+        detail=False,
+        url_path='subscriptions',
+        permission_classes=(IsAuthenticated,),
+    )
     def subscriptions(self, request):
         """Вывод списка подписок пользователя."""
 
-        user = request.user
-        queryset = Follow.objects.filter(user=user)
+        user = get_object_or_404(
+            User,
+            id=request.user.id
+        )
+        queryset = [i.author for i in user.follower.all()]
         pages = self.paginate_queryset(queryset)
         serializer = FollowSerializer(
             pages,
             many=True,
             context={'request': request}
         )
+
         return self.get_paginated_response(serializer.data)
 
 
@@ -87,6 +109,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
     filterset_class = RecipesFilter
+    filter_backends = (IngredientsFilter,)
+    search_fields = ('^name',)
 
     def get_serializer_class(self):
         """Выбор сериализатора."""
