@@ -107,18 +107,19 @@ class RecipesViewSet(viewsets.ModelViewSet):
     """Работа с рецептами."""
 
     queryset = Recipe.objects.all()
+    serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     filterset_class = RecipesFilter
     filter_backends = (IngredientsFilter,)
     search_fields = ('^name',)
 
-    def get_serializer_class(self):
-        """Выбор сериализатора."""
-
-        if self.request.method == 'GET':
-            return RecipeGetSerialzer
-
-        return RecipeListSerializer
+    #def get_serializer_class(self):
+    #    """Выбор сериализатора."""
+#
+    #    if self.request.method == 'GET':
+    #        return RecipeGetSerialzer
+#
+    #    return RecipeListSerializer
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""

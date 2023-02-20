@@ -30,6 +30,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'measurement_unit', 'amount',
         )
+        read_only_fields = ('name',)
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
@@ -134,12 +135,13 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Сохраняет рецепт."""
 
+        image = validated_data.pop('image')
         ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(image=image, **validated_data)
+        tags_data = self.initial_data.get('tags')
         recipe.tags.set(tags_data)
         self.add_ingredients(ingredients_data, recipe)
-        recipe.save()
+
         return recipe
 
     def update(self, instance, validated_data):
@@ -176,8 +178,8 @@ class RecipeGetSerialzer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id', 'ingredients', 'tags', 'image', 'author',
-            'name', 'text', 'cooking_time',
+            'id', 'tags', 'author', 'ingredients', 'name', 'image',
+            'text', 'cooking_time',
         )
 
 
@@ -185,15 +187,6 @@ class FollowRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор рецепта для подписок."""
 
     image = Base64ImageField()
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
-        read_only_fields = ('id', 'name', 'image', 'cooking_time')
-
-
-class GetRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор рецептов для подписок."""
 
     class Meta:
         model = Recipe
@@ -228,7 +221,7 @@ class FollowSerializer(serializers.ModelSerializer):
         """Определение поля recipes."""
 
         queryset = Recipe.objects.filter(author=obj)
-        return GetRecipeSerializer(
+        return FollowRecipeSerializer(
             queryset,
             many=True
         ).data

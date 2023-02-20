@@ -46,6 +46,7 @@ def add_or_delete(request, model, obj_id):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(
+            {'errors': 'Удаление уже произведено'},
             status=status.HTTP_400_BAD_REQUEST)
 
     if model.objects.filter(
