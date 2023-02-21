@@ -23,12 +23,11 @@ class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиентов."""
 
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Ingredient
         fields = (
-            'id', 'name', 'measurement_unit', 'amount',
+            'id', 'name', 'measurement_unit',
         )
         read_only_fields = ('name',)
 
@@ -43,7 +42,6 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit',
     )
-    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = RecipeIngredients
@@ -60,7 +58,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
     author = UserSerializer(
         read_only=True,
     )
-    ingredients = IngredientSerializer(
+    ingredients = RecipeIngredientsSerializer(
+        source='recipe_ingredients',
         many=True,
     )
     image = Base64ImageField(
@@ -158,29 +157,29 @@ class RecipeListSerializer(serializers.ModelSerializer):
         return instance
 
 
-class RecipeGetSerialzer(serializers.ModelSerializer):
-    """Сериализатор рецептов."""
-
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-        default=serializers.CurrentUserDefault(),
-    )
-    tags = TagSerializer(
-        read_only=True,
-        many=True,
-    )
-    ingredients = RecipeIngredientsSerializer(
-        source='recipe_ingredients',
-        many=True,
-    )
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id', 'tags', 'author', 'ingredients', 'name', 'image',
-            'text', 'cooking_time',
-        )
+#class RecipeGetSerialzer(serializers.ModelSerializer):
+#    """Сериализатор рецептов."""
+#
+#    author = serializers.SlugRelatedField(
+#        slug_field='username',
+#        read_only=True,
+#        default=serializers.CurrentUserDefault(),
+#    )
+#    tags = TagSerializer(
+#        read_only=True,
+#        many=True,
+#    )
+#    ingredients = RecipeIngredientsSerializer(
+#        source='recipe_ingredients',
+#        many=True,
+#    )
+#
+#    class Meta:
+#        model = Recipe
+#        fields = (
+#            'id', 'tags', 'author', 'ingredients', 'name', 'image',
+#            'text', 'cooking_time',
+#        )
 
 
 class FollowRecipeSerializer(serializers.ModelSerializer):
