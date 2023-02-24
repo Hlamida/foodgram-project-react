@@ -2,21 +2,27 @@ from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.filters import IngredientsFilter, RecipesFilter
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (IngredientSerializer, FollowSerializer,
+from api.paginators import CustomPadgination
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers import (IngredientSerializer, FavoritedSerializer, FollowSerializer,
                              RecipeGetSerialzer, RecipeListSerializer,
                              TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from users.models import Follow, User
+from users.serializers import UserSerializer
 
 
 class SubscribeViewSet(UserViewSet):
     """Реализовывает подписки пользователя."""
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = CustomPadgination
 
     @action(
         methods=['POST', 'DELETE'],
@@ -27,8 +33,8 @@ class SubscribeViewSet(UserViewSet):
     def subscribe(self, request, id):
         """Подписка на автора, удаление подписки."""
 
-        following = get_object_or_404(User, id=id)
-        follower = request.user
+        user = request.user
+        author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
             user = request.user
@@ -55,7 +61,7 @@ class SubscribeViewSet(UserViewSet):
 
         if request.method == 'DELETE':
             Follow.objects.filter(
-                user=follower, author=following
+                user=user, author=author
             ).delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -87,20 +93,22 @@ class SubscribeViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-class TagsViewSet(viewsets.ModelViewSet):
+class TagsViewSet(viewsets.ReadOnlyModelViewSet):
     """Работа с тегами."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Работа с ингредиентами."""
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
+    filter_backends = (IngredientsFilter,)
+    search_fields = ('^name',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -109,9 +117,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
-    filterset_class = RecipesFilter
-    filter_backends = (IngredientsFilter,)
-    search_fields = ('^name',)
+    pagination_class = CustomPadgination
+    filter_class = RecipesFilter
 
     #def get_serializer_class(self):
     #    """Выбор сериализатора."""

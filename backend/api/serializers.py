@@ -101,7 +101,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def validate(self, obj):
         """Валидация данных."""
 
-        ingredients = obj.pop('ingredients')
+        ingredients = obj.pop('recipe_ingredients')
         ingredient_list = []
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(
@@ -157,29 +157,29 @@ class RecipeListSerializer(serializers.ModelSerializer):
         return instance
 
 
-#class RecipeGetSerialzer(serializers.ModelSerializer):
-#    """Сериализатор рецептов."""
-#
-#    author = serializers.SlugRelatedField(
-#        slug_field='username',
-#        read_only=True,
-#        default=serializers.CurrentUserDefault(),
-#    )
-#    tags = TagSerializer(
-#        read_only=True,
-#        many=True,
-#    )
-#    ingredients = RecipeIngredientsSerializer(
-#        source='recipe_ingredients',
-#        many=True,
-#    )
-#
-#    class Meta:
-#        model = Recipe
-#        fields = (
-#            'id', 'tags', 'author', 'ingredients', 'name', 'image',
-#            'text', 'cooking_time',
-#        )
+class RecipeGetSerialzer(serializers.ModelSerializer):
+    """Сериализатор рецептов."""
+
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+        default=serializers.CurrentUserDefault(),
+    )
+    tags = TagSerializer(
+        read_only=True,
+        many=True,
+    )
+    ingredients = RecipeIngredientsSerializer(
+        source='recipe_ingredients',
+        many=True,
+    )
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id', 'tags', 'author', 'ingredients', 'name', 'image',
+            'text', 'cooking_time',
+        )
 
 
 class FollowRecipeSerializer(serializers.ModelSerializer):

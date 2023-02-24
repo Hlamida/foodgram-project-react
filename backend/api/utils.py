@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 
-from api.serializers import FollowRecipeSerializer
+from api.serializers import FavoritedSerializer, FollowRecipeSerializer
 from recipes.models import Recipe, RecipeIngredients
 
 
@@ -65,7 +65,7 @@ def add_or_delete(request, model, obj_id):
         user=request.user,
         recipe=recipe,
     )
-    serializer = FollowRecipeSerializer(recipe)
+    serializer = FavoritedSerializer(recipe)
 
     return Response(
         serializer.data,

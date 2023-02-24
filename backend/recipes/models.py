@@ -28,6 +28,12 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ('name',)
+        constraints = [
+            UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='Ингредиент не уникален',
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -199,7 +205,8 @@ class Favorite(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=['user', 'recipe'], name='Рецепт уже в избранном'
+                fields=['user', 'recipe'],
+                name='Рецепт уже в избранном',
             )
         ]
 
@@ -223,6 +230,7 @@ class Cart(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=['user', 'recipe'], name='Рецепт уже в корзине'
+                fields=['user', 'recipe'],
+                name='Рецепт уже в корзине',
             )
         ]
