@@ -22,10 +22,10 @@ jobs:
 
       - name: Test with flake8 and Django self tests
         run: |
-          python -m flake8
+          python -m flake8 backend
 
   build_and_push_to_docker_hub:
-    name: Push Docker image to Docker
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: tests
     if:
@@ -46,6 +46,7 @@ jobs:
       - name: Push to DockerbHub
         uses: docker/build-push-action@v2
         with:
+          context: ./backend
           file: /backend/Dockerfile
           push: true
           tags: aleksandrkulagin/foodgram-project-react:latest
