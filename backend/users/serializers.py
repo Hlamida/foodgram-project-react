@@ -1,8 +1,7 @@
+from rest_framework import serializers
 from djoser.serializers import (
     UserCreateSerializer as BaseUserRegistrationSerializer
 )
-from rest_framework import serializers
-
 from users.models import Follow, User
 
 

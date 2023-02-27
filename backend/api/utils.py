@@ -11,11 +11,11 @@ def get_shopping_list(request):
     """Создаёт список покупок."""
 
     shopping_list = RecipeIngredients.objects.filter(
-            recipe__cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(sum_amount=Sum('amount'))
+        recipe__cart__user=request.user
+    ).values(
+        'ingredient__name',
+        'ingredient__measurement_unit'
+    ).annotate(sum_amount=Sum('amount'))
     content = (
         [f'{item["ingredient__name"]}'
          f' ({item["ingredient__measurement_unit"]}) '
