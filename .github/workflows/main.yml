@@ -32,6 +32,7 @@ jobs:
       contains('
         refs/heads/master
         refs/heads/main
+        refs/heads/working
       ', github.ref)
     steps:
       - name: Check out the repo

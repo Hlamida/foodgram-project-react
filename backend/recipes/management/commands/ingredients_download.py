@@ -19,10 +19,8 @@ class Command(BaseCommand):
             )
             ingredients = json.load(open(path, 'r', encoding='utf8'))
             Ingredient.objects.bulk_create(
-                [
-                 Ingredient(**ingredient)
-                 for ingredient in ingredients
-                ], ignore_conflicts=True,
+                [Ingredient(**ingredient) for ingredient in ingredients],
+                ignore_conflicts=True,
             )
             print('Загрузка ингредиентов завершена')
 
