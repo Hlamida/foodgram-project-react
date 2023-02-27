@@ -1,7 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-
 from recipes.constants import MIN_COOKING_TIME, MIN_QUANTITY
 from users.models import User
 from users.validators import validate_hex

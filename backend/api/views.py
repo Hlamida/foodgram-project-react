@@ -1,19 +1,18 @@
-from djoser.views import UserViewSet
+from api.filters import IngredientsFilter, RecipesFilter
+from api.paginators import CustomPadgination
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers import (FollowSerializer,
+                             IngredientSerializer, RecipeGetSerialzer,
+                             RecipeListSerializer, TagSerializer)
+from api.utils import add_or_delete, get_shopping_list
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
-from api.filters import IngredientsFilter, RecipesFilter
-from api.paginators import CustomPadgination
-from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (IngredientSerializer, FavoritedSerializer, FollowSerializer,
-                             RecipeGetSerialzer, RecipeListSerializer,
-                             TagSerializer)
-from api.utils import add_or_delete, get_shopping_list
-from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from users.models import Follow, User
 from users.serializers import UserSerializer
 
