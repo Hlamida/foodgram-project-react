@@ -1,4 +1,5 @@
 from djoser.views import UserViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -118,15 +119,16 @@ class RecipesViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
+    filter_backends = (DjangoFilterBackend,)
     filter_class = RecipesFilter
 
-    #def get_serializer_class(self):
-    #    """Выбор сериализатора."""
-#
-    #    if self.request.method == 'GET':
-    #        return RecipeGetSerialzer
-#
-    #    return RecipeListSerializer
+    def get_serializer_class(self):
+        """Выбор сериализатора."""
+
+        if self.request.method == 'GET':
+            return RecipeGetSerialzer
+
+        return RecipeListSerializer
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""

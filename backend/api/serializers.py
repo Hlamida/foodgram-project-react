@@ -66,37 +66,44 @@ class RecipeListSerializer(serializers.ModelSerializer):
         max_length=None,
         use_url=True,
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    #is_favorited = serializers.SerializerMethodField()
+    #is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients', 'is_favorited',
-            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time',
+            'id', 'tags', 'author', 'ingredients',
+            'name', 'image', 'text', 'cooking_time',
         )
+    
+    #class Meta:
+    #    model = Recipe
+    #    fields = (
+    #        'id', 'tags', 'author', 'ingredients', 'is_favorited',
+    #        'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time',
+    #    )
 
-    def get_is_favorited(self, obj):
-        """Определяет, в избранном ли рецепт."""
-
-        if not self.context.get('request').user.pk:
-            return None
-
-        return Favorite.objects.filter(
-            recipe=obj.id,
-            user=self.context.get('request').user
-        ).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        """Определяет, есть ли рецепт в списке покупок."""
-
-        if not self.context.get('request').user.pk:
-            return None
-
-        return Cart.objects.filter(
-            recipe=obj.id,
-            user=self.context.get('request').user
-        ).exists()
+    #def get_is_favorited(self, obj):
+    #    """Определяет, в избранном ли рецепт."""
+#
+    #    if not self.context.get('request').user.pk:
+    #        return None
+#
+    #    return Favorite.objects.filter(
+    #        recipe=obj.id,
+    #        user=self.context.get('request').user
+    #    ).exists()
+#
+    #def get_is_in_shopping_cart(self, obj):
+    #    """Определяет, есть ли рецепт в списке покупок."""
+#
+    #    if not self.context.get('request').user.pk:
+    #        return None
+#
+    #    return Cart.objects.filter(
+    #        recipe=obj.id,
+    #        user=self.context.get('request').user
+    #    ).exists()
 
     def validate(self, obj):
         """Валидация данных."""
@@ -160,26 +167,66 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class RecipeGetSerialzer(serializers.ModelSerializer):
     """Сериализатор рецептов."""
 
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-        default=serializers.CurrentUserDefault(),
-    )
+    #author = serializers.SlugRelatedField(
+    #    slug_field='username',
+    #    read_only=True,
+    #    default=serializers.CurrentUserDefault(),
+    #)
+    #tags = TagSerializer(
+    #    read_only=True,
+    #    many=True,
+    #)
+    #ingredients = RecipeIngredientsSerializer(
+    #    source='recipe_ingredients',
+    #    many=True,
+    #)
     tags = TagSerializer(
         read_only=True,
         many=True,
+    )
+    author = UserSerializer(
+        read_only=True,
     )
     ingredients = RecipeIngredientsSerializer(
         source='recipe_ingredients',
         many=True,
     )
+    image = Base64ImageField(
+        max_length=None,
+        use_url=True,
+    )
+
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
             'id', 'tags', 'author', 'ingredients', 'name', 'image',
-            'text', 'cooking_time',
+            'text', 'cooking_time', 'is_favorited', 'is_in_shopping_cart',
         )
+
+    def get_is_favorited(self, obj):
+        """Определяет, в избранном ли рецепт."""
+
+        if not self.context.get('request').user.pk:
+            return None
+
+        return Favorite.objects.filter(
+            recipe=obj.id,
+            user=self.context.get('request').user
+        ).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        """Определяет, есть ли рецепт в списке покупок."""
+
+        if not self.context.get('request').user.pk:
+            return None
+
+        return Cart.objects.filter(
+            recipe=obj.id,
+            user=self.context.get('request').user
+        ).exists()
 
 
 class FollowRecipeSerializer(serializers.ModelSerializer):
