@@ -89,7 +89,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            mkdir -p backend
             cd backend
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
