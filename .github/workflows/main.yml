@@ -73,6 +73,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
+            sudo docker system prune --all
             mkdir -p foodgram-project-react
             cd foodgram-project-react
             sudo docker-compose stop
