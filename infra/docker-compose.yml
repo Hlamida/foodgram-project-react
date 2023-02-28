@@ -2,9 +2,10 @@ version: '3.8'
 services:
 
   frontend:
-    build:
-      context: duncan/frontend
-      dockerfile: Dockerfile
+    image: aleksandrkulagin/foodgram_frontend
+    #build:
+    #  context: ../frontend
+    #  dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -16,9 +17,10 @@ services:
       - ../backend/.env
   
   backend:
-    build:
-      context: duncan/backend/
-      dockerfile: Dockerfile
+    image: aleksandrkulagin/foodgram:latest
+    #build:
+    #  context: ../backend/
+    #  dockerfile: Dockerfile
     volumes:
       - static_value:/app/static_backend/
       - media_value:/app/media/
