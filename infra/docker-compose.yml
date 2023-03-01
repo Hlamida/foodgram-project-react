@@ -16,7 +16,6 @@ services:
   backend:
     image: aleksandrkulagin/foodgram:latest
     restart: always
-    build: .
     volumes:
       - static_value:/app/static_backend/
       - media_value:/app/media/
