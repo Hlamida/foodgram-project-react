@@ -74,10 +74,11 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker-compose stop
-            sudo docker-compose rm backend
+            sudo docker-compose rm ${{ secrets.DOCKER_USERNAME }}/foodgram
+            sudo docker-compose rm ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
             sudo docker system prune --all
-            sudo docker image pull ${{ secrets.DOCKER_USERNAME }}/foodgram
-            sudo docker image pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
       
       - name: env create
         uses: appleboy/ssh-action@master
