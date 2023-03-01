@@ -14,7 +14,7 @@ class Command(BaseCommand):
         print('Начинается импорт ингредиентов')
         try:
             path = os.path.join(
-                settings.BASE_DIR, '../data/', 'ingredients.json',
+                settings.BASE_DIR, './', 'ingredients.json',
             )
             ingredients = json.load(open(path, 'r', encoding='utf8'))
             Ingredient.objects.bulk_create(
