@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   frontend:
-    image: aleksandrkulagin/foodgram_frontend
+    image: aleksandrkulagin/foodgram_frontend:latest
     #build:
     #  context: ../frontend
     #  dockerfile: Dockerfile
@@ -14,10 +14,11 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     env_file:
-      - backend/.env
+      - ./.env
   
   backend:
     image: aleksandrkulagin/foodgram:latest
+    restart: always
     #build:
     #  context: ../backend/
     #  dockerfile: Dockerfile
@@ -27,7 +28,7 @@ services:
     depends_on:
       - db
     env_file:
-      - backend/.env
+      - ./.env
 
   nginx:
     image: nginx:1.19.3
