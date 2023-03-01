@@ -3,9 +3,6 @@ services:
 
   frontend:
     image: aleksandrkulagin/foodgram_frontend:latest
-    #build:
-    #  context: ../frontend
-    #  dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -14,22 +11,19 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     env_file:
-      - .env
+      - ./.env
   
   backend:
     image: aleksandrkulagin/foodgram:latest
     restart: always
     build: .
-    #build:
-    #  context: ../backend/
-    #  dockerfile: Dockerfile
     volumes:
       - static_value:/app/static_backend/
       - media_value:/app/media/
     depends_on:
       - db
     env_file:
-      - .env
+      - ./.env
 
   nginx:
     image: nginx:1.19.3
