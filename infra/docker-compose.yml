@@ -14,11 +14,12 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
   
   backend:
     image: aleksandrkulagin/foodgram:latest
     restart: always
+    build: .
     #build:
     #  context: ../backend/
     #  dockerfile: Dockerfile
@@ -28,7 +29,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ./.env
+      - .env
 
   nginx:
     image: nginx:1.19.3
