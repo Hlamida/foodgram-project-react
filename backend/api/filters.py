@@ -1,17 +1,14 @@
 from django_filters.rest_framework import FilterSet, filters
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe
 from rest_framework.filters import SearchFilter
+from users.models import User
 
 
 class RecipesFilter(FilterSet):
     """Класс для фильтрации рецептов."""
 
-    tags = filters.ModelMultipleChoiceFilter(
-        queryset=Tag.objects.all(),
-        field_name='tags__slug',
-        to_field_name='slug',
-    )
-    aauthor = filters.CharFilter(lookup_expr='exact')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    author = filters.ModelChoiceFilter(queryset=User.objects.all())
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart')
