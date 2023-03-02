@@ -5,9 +5,11 @@
 
 ### Документация проекта:
 
+http://158.160.27.175/api/docs/redoc.html
 
-http://localhost/api/docs/
-
+Адрес сервера 158.160.27.175
+Логин / пароль администратора: kulagin / kulagin
+      
 
 ### Предназначение проекта:
 
@@ -67,8 +69,6 @@ https://docs.docker.com/compose/install/
 sudo docker-compose exec -T web python manage.py loaddata fixtures.json 
 ```
 
-7. Адрес сервера 158.160.27.175
-   Логин / пароль администратора: kulagin / kulagin
    
 ### Технологии:
 
