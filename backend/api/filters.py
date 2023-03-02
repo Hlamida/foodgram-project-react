@@ -7,7 +7,6 @@ from users.models import User
 class RecipesFilter(FilterSet):
     """Класс для фильтрации рецептов."""
 
-    #tags = filters.AllValuesMultipleFilter(field_name='tags__recipetags__slug')
     tags = filters.filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name='tags__slug',
