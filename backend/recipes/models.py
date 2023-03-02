@@ -1,7 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-
 from recipes.constants import MIN_COOKING_TIME, MIN_QUANTITY
 from users.models import User
 from users.validators import validate_hex
@@ -28,6 +27,12 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ('name',)
+        constraints = [
+            UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='Ингредиент не уникален',
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -141,7 +146,7 @@ class RecipeIngredients(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='recipe_ingredients',
+        related_name='ingredients_recipe',
     )
     recipe = models.ForeignKey(
         Recipe,
@@ -199,7 +204,8 @@ class Favorite(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=['user', 'recipe'], name='Рецепт уже в избранном'
+                fields=['user', 'recipe'],
+                name='Рецепт уже в избранном',
             )
         ]
 
@@ -223,6 +229,7 @@ class Cart(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=['user', 'recipe'], name='Рецепт уже в корзине'
+                fields=['user', 'recipe'],
+                name='Рецепт уже в корзине',
             )
         ]

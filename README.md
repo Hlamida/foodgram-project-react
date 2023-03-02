@@ -67,6 +67,9 @@ https://docs.docker.com/compose/install/
 sudo docker-compose exec -T web python manage.py loaddata fixtures.json 
 ```
 
+7. Адрес сервера 158.160.27.175
+   Логин / пароль администратора: kulagin / kulagin
+   
 ### Технологии:
 
 Проект сделан на Django и DRF.

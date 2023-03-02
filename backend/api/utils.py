@@ -1,22 +1,21 @@
+from api.serializers import FavoritedSerializer
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from recipes.models import Recipe, RecipeIngredients
 from rest_framework import status
 from rest_framework.response import Response
-
-from api.serializers import FollowRecipeSerializer
-from recipes.models import Recipe, RecipeIngredients
 
 
 def get_shopping_list(request):
     """Создаёт список покупок."""
 
     shopping_list = RecipeIngredients.objects.filter(
-            recipe__cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(sum_amount=Sum('amount'))
+        recipe__cart__user=request.user
+    ).values(
+        'ingredient__name',
+        'ingredient__measurement_unit'
+    ).annotate(sum_amount=Sum('amount'))
     content = (
         [f'{item["ingredient__name"]}'
          f' ({item["ingredient__measurement_unit"]}) '
@@ -46,6 +45,7 @@ def add_or_delete(request, model, obj_id):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(
+            {'errors': 'Удаление уже произведено'},
             status=status.HTTP_400_BAD_REQUEST)
 
     if model.objects.filter(
@@ -64,7 +64,7 @@ def add_or_delete(request, model, obj_id):
         user=request.user,
         recipe=recipe,
     )
-    serializer = FollowRecipeSerializer(recipe)
+    serializer = FavoritedSerializer(recipe)
 
     return Response(
         serializer.data,
