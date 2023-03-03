@@ -70,7 +70,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients',
+            'id', 'tags', 'author', 'ingredients', 'is_favorited',
             'name', 'image', 'text', 'cooking_time',
         )
 

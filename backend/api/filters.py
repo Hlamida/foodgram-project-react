@@ -18,7 +18,7 @@ class RecipesFilter(FilterSet):
         fields = {
             'tags',
             'author',
-           # 'is_favorited',
+            'is_favorited',
         }
 
     def filter_is_favorited(self, queryset, name, value):
