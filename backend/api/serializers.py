@@ -65,25 +65,13 @@ class RecipeListSerializer(serializers.ModelSerializer):
         max_length=None,
         use_url=True,
     )
-    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients', 'is_favorited',
+            'id', 'tags', 'author', 'ingredients',
             'name', 'image', 'text', 'cooking_time',
         )
-
-    def get_is_favorited(self, obj):
-        """Определяет, в избранном ли рецепт."""
-
-        if not self.context.get('request').user.pk:
-            return None
-
-        return Favorite.objects.filter(
-            recipe=obj.id,
-            user=self.context.get('request').user
-        ).exists()
 
     def validate(self, obj):
         """Валидация данных."""
