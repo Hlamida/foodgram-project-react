@@ -118,19 +118,14 @@ class RecipesViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
-    #filter_backends = (DjangoFilterBackend,)
-    #filter_class = RecipesFilter
+    filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self, request):
         """Выбор сериализатора."""
 
-        #if self.request.method == 'GET':
-        #    return RecipeGetSerialzer
-
         if 'is_favorited' in request:
-            queryset = Recipe.objects.all()
 
-            return queryset.filter(is_favorited=True)
+            return Recipe.objects.filter(is_favorited=True)
 
         return RecipeListSerializer
 
