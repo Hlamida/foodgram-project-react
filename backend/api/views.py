@@ -123,7 +123,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора."""
 
-        if 'is_favorited' in self.request:
+        if self.request.query_params.get('is_favorited'):
 
             return Recipe.objects.filter(is_favorited=True)
 
