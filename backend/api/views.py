@@ -121,13 +121,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
     #filter_backends = (DjangoFilterBackend,)
     #filter_class = RecipesFilter
 
-    def get_serializer_class(self):
-        """Выбор сериализатора."""
-
-        if self.request.method == 'GET':
-            return RecipeGetSerialzer
-
-        return RecipeListSerializer
+    #def get_serializer_class(self):
+    #    """Выбор сериализатора."""
+#
+    #    if self.request.method == 'GET':
+    #        return RecipeGetSerialzer
+#
+    #    return RecipeListSerializer
 
     def get_queryset(self):
         """Выбор кверисета."""
