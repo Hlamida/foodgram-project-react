@@ -5,11 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from api.filters import IngredientsFilter, RecipesFilter
+from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FollowSerializer,
-                             IngredientSerializer, RecipeGetSerialzer,
+                             IngredientSerializer,
                              RecipeListSerializer, TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
