@@ -132,8 +132,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Выбор кверисета."""
 
-        favorited = self.request.query_params.get('favorited')
-        if favorited is not None:
+        if 'is_favorited' in self.kwargs['is_favorited']:
             return Recipe.objects.filter(is_favorited=True)
 
         return Recipe.objects.all()
