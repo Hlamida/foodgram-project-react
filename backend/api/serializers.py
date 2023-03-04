@@ -78,9 +78,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'name', 'image', 'text', 'cooking_time',
         )
 
-    def validate(self, obj):
-        """Валидация данных."""
-
+    #def validate(self, obj):
+    #    """Валидация данных."""
+#
         #ingredients = obj.pop('recipe_ingredients')
         #ingredient_list = []
         #for ingredient_item in ingredients:
