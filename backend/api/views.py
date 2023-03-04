@@ -132,10 +132,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Выбор кверисета."""
 
-        query_params = 'is_favorited' in self.request.query_params
-
-        if query_params:
+        if 'is_favorited' in self.request.query_params:
             return Recipe.objects.filter(favorite__user=self.request.user)
+
+        if 'is_in_shopping_cart' in self.request.query_params:
+            return Cart.objects.filter(cart__user=self.request.user)
 
         return Recipe.objects.all()
 
