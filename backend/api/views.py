@@ -125,21 +125,20 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Выбор сериализатора."""
 
         if self.request.method == 'GET':
-
             return RecipeGetSerialzer
 
         return RecipeListSerializer
 
-    def get_queryset(self):
+    #def get_queryset(self):
     #    return super().get_queryset()
     #(self):
-        """Выбор кверисета."""
-
-        if self.request.query_params.get('is_favorited'):
-
-            return Recipe.objects.filter(is_favorited=True)
-
-        return RecipeListSerializer
+    #    """Выбор кверисета."""
+#
+    #    if self.request.query_params.get('is_favorited'):
+#
+    #        return Recipe.objects.filter(is_favorited=True)
+#
+    #    return RecipeListSerializer
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""
