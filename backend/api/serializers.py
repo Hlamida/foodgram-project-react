@@ -78,39 +78,39 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'name', 'image', 'text', 'cooking_time',
         )
 
-    #def validate(self, obj):
-    #    """Валидация данных."""
-#
-        #ingredients = obj.pop('recipe_ingredients')
-        #ingredient_list = []
-        #for ingredient_item in ingredients:
-        #    ingredient = get_object_or_404(
-        #        Ingredient,
-        #        id=ingredient_item['id']
-        #    )
-        #    if ingredient in ingredient_list:
-        #        raise serializers.ValidationError(
-        #            'Ингредиент уже добавлен'
-        #        )
-        #    ingredient_list.append(ingredient)
-        #obj['ingredients'] = ingredients
-#
-        #return obj
+    def validate(self, obj):
+        """Валидация данных."""
 
-    def validate_ingredients(self, ingredients):
-        ingredients_list = []
-        if not ingredients:
-            raise serializers.ValidationError(
-                'Отсутствуют ингридиенты')
-        for ingredient in ingredients:
-            if ingredient['id'] in ingredients_list:
+        ingredients = obj.pop('recipe_ingredients')
+        ingredient_list = []
+        for ingredient_item in ingredients:
+            ingredient = get_object_or_404(
+                Ingredient,
+                id=ingredient_item['id']
+            )
+            if ingredient in ingredient_list:
                 raise serializers.ValidationError(
-                    'Ингридиенты должны быть уникальны')
-            ingredients_list.append(ingredient['id'])
-            if int(ingredient.get('amount')) < 1:
-                raise serializers.ValidationError(
-                    'Количество ингредиента больше 0')
-        return ingredients
+                    'Ингредиент уже добавлен'
+                )
+            ingredient_list.append(ingredient)
+        obj['ingredients'] = ingredients
+
+        return obj
+
+    #def validate_ingredients(self, ingredients):
+    #    ingredients_list = []
+    #    if not ingredients:
+    #        raise serializers.ValidationError(
+    #            'Отсутствуют ингридиенты')
+    #    for ingredient in ingredients:
+    #        if ingredient['id'] in ingredients_list:
+    #            raise serializers.ValidationError(
+    #                'Ингридиенты должны быть уникальны')
+    #        ingredients_list.append(ingredient['id'])
+    #        if int(ingredient.get('amount')) < 1:
+    #            raise serializers.ValidationError(
+    #                'Количество ингредиента больше 0')
+    #    return ingredients
 
     def add_ingredients(self, ingredients, recipe):
         """Добавляет ингредиенты."""
