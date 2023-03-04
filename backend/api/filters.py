@@ -1,4 +1,5 @@
 from django_filters.rest_framework import FilterSet, filters
+from django_filters.widgets import BooleanWidget
 from recipes.models import Recipe
 from rest_framework.filters import SearchFilter
 from users.models import User
@@ -9,10 +10,10 @@ class RecipesFilter(FilterSet):
 
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
     is_in_shopping_cart = filters.BooleanFilter(
-        widget=filters.widgets.BooleanWidget(), label='В корзине.'
+        widget=BooleanWidget(), label='В корзине.'
     )
     is_favorited = filters.BooleanFilter(
-        widget=filters.widgets.BooleanWidget(), label='В избранных.'
+        widget=BooleanWidget(), label='В избранных.'
     )
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug',
                                            label='Ссылка')
