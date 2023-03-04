@@ -118,14 +118,19 @@ class RecipesViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
-    filter_backends = (DjangoFilterBackend,)
-    filter_class = RecipesFilter
+    #filter_backends = (DjangoFilterBackend,)
+    #filter_class = RecipesFilter
 
-    def get_serializer_class(self):
+    def get_serializer_class(self, request):
         """Выбор сериализатора."""
 
-        if self.request.method == 'GET':
-            return RecipeGetSerialzer
+        #if self.request.method == 'GET':
+        #    return RecipeGetSerialzer
+
+        if 'is_favorited' in request:
+            queryset = Recipe.objects.all()
+
+            return queryset.filter(is_favorited=True)
 
         return RecipeListSerializer
 
@@ -140,7 +145,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         detail=True,
         url_path='favorite',
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk=None):
         """Добавляет рецепт в избранное или удаляет его."""
@@ -151,7 +156,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         detail=True,
         url_path='shopping_cart',
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в корзину или удаляет его."""
