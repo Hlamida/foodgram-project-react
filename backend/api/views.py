@@ -120,10 +120,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPadgination
     filter_backends = (DjangoFilterBackend,)
 
-    def get_serializer_class(self, request):
+    def get_serializer_class(self):
         """Выбор сериализатора."""
 
-        if 'is_favorited' in request:
+        if 'is_favorited' in self.request:
 
             return Recipe.objects.filter(is_favorited=True)
 
