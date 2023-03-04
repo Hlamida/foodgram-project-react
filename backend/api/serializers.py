@@ -96,14 +96,19 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Добавляет ингредиенты."""
 
         for ingredient in ingredients:
-            amount = ingredient.get('amount')
-            ingredient_instance = get_object_or_404(
-                Ingredient,
-                pk=ingredient['id'])
+            #amount = ingredient.get('amount')
+            #ingredient_instance = get_object_or_404(
+            #    Ingredient,
+            #    pk=ingredient['id'])
+            #RecipeIngredients.objects.create(
+            #    recipe=recipe,
+            #    ingredient=ingredient_instance,
+            #    amount=amount
+            #)
             RecipeIngredients.objects.create(
                 recipe=recipe,
-                ingredient=ingredient_instance,
-                amount=amount
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount'),
             )
 
     def create(self, validated_data):
