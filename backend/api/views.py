@@ -136,7 +136,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Recipe.objects.filter(favorite__user=self.request.user)
 
         if 'is_in_shopping_cart' in self.request.query_params:
-            return Cart.objects.filter(cart__user=self.request.user)
+            return Recipe.objects.filter(cart__user=self.request.user)
 
         return Recipe.objects.all()
 
