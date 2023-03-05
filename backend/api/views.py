@@ -23,7 +23,7 @@ class SubscribeViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPadgination
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -141,7 +141,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if 'is_in_shopping_cart' in self.request.query_params:
             return Recipe.objects.filter(cart__user=self.request.user)
 
-        return Recipe.objects.filter(tags__slug__in=query_tags)
+        return Recipe.objects.all()
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""
