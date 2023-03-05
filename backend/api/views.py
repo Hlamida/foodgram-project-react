@@ -23,7 +23,7 @@ class SubscribeViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPadgination
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -117,7 +117,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     #serializer_class = RecipeListSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
 
     def get_serializer_class(self):
