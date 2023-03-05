@@ -136,7 +136,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if 'is_favorited' in self.request.query_params:
             return Recipe.objects.filter(
                 favorite__user=self.request.user, tags__slug__in=query_tags
-            )
+            ).distinct()
 
         if 'is_in_shopping_cart' in self.request.query_params:
             return Recipe.objects.filter(cart__user=self.request.user)
