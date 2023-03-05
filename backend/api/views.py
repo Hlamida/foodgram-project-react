@@ -141,6 +141,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if 'is_in_shopping_cart' in self.request.query_params:
             return Recipe.objects.filter(cart__user=self.request.user)
 
+        if query_tags:
+            return Recipe.objects.filter(tags__slug__in=query_tags)
+
         return Recipe.objects.all()
 
     def perform_create(self, serializer):
