@@ -133,19 +133,15 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Выбор кверисета."""
 
         query = self.request.query_params
-        q_tags = self.request.query_params.getlist('tags')
-        q_t = []
-        #query_tags = self.request.query_params.get('tags')
-        for query_tags in self.request.query_params.get('tags'):
-            q_t += query_tags
-        
+        query_tags = self.request.query_params.getlist('tags')
+
         if 'is_favorited' in self.request.query_params:
-            return Recipe.objects.filter(favorite__user=self.request.user, tags__slug=q_tags)
+            return Recipe.objects.filter(favorite__user=self.request.user, tags__slug__in=query_tags)
 
         if 'is_in_shopping_cart' in self.request.query_params:
             return Recipe.objects.filter(cart__user=self.request.user)
 
-        return Recipe.objects.all()
+        return Recipe.objects.filter(tags__slug__in=query_tags)
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""
