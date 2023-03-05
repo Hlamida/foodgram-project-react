@@ -23,6 +23,7 @@ class SubscribeViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPadgination
+    permission_classes = (AllowAny,)
 
     @action(
         methods=['POST', 'DELETE'],
