@@ -50,15 +50,14 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор рецептов."""
 
-    #tags = TagSerializer(
-    #    read_only=True,
-    #    many=True,
-    #)
-
-    tags = serializers.PrimaryKeyRelatedField(
+    tags = TagSerializer(
+        read_only=True,
         many=True,
-        queryset=Tag.objects.all(),
     )
+    #tags = serializers.PrimaryKeyRelatedField(
+    #    many=True,
+    #    queryset=Tag.objects.all(),
+    #)
     author = UserSerializer(
         read_only=True,
     )
