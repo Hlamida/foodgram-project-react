@@ -1,15 +1,14 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from api.filters import IngredientsFilter, RecipesFilter
+from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (FollowSerializer,
-                             IngredientSerializer, RecipeGetSerialzer,
+from api.serializers import (FollowSerializer, RecipeGetSerializer,
+                             IngredientSerializer,
                              RecipeListSerializer, TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
@@ -23,6 +22,7 @@ class SubscribeViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPadgination
+    permission_classes = (IsAuthenticated,)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -115,19 +115,40 @@ class RecipesViewSet(viewsets.ModelViewSet):
     """Работа с рецептами."""
 
     queryset = Recipe.objects.all()
-    serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
-    filter_backends = (DjangoFilterBackend,)
-    filter_class = RecipesFilter
 
     def get_serializer_class(self):
         """Выбор сериализатора."""
 
         if self.request.method == 'GET':
-            return RecipeGetSerialzer
+            return RecipeGetSerializer
 
         return RecipeListSerializer
+
+    def get_queryset(self):
+        """Фильтрация содержимого выводимого кверисета."""
+
+        query_tags = self.request.query_params.getlist('tags')
+        query_author = self.request.query_params.get('author')
+
+        if 'author' in self.request.query_params:
+            return Recipe.objects.filter(
+                author=query_author, tags__slug__in=query_tags
+            ).distinct()
+
+        if 'is_favorited' in self.request.query_params:
+            return Recipe.objects.filter(
+                favorite__user=self.request.user, tags__slug__in=query_tags
+            ).distinct()
+
+        if 'is_in_shopping_cart' in self.request.query_params:
+            return Recipe.objects.filter(cart__user=self.request.user)
+
+        if query_tags:
+            return Recipe.objects.filter(tags__slug__in=query_tags).distinct()
+
+        return Recipe.objects.all()
 
     def perform_create(self, serializer):
         """Передает сериализатору автора рецепта."""
@@ -140,7 +161,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         detail=True,
         url_path='favorite',
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk=None):
         """Добавляет рецепт в избранное или удаляет его."""
@@ -151,7 +172,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         detail=True,
         url_path='shopping_cart',
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в корзину или удаляет его."""
