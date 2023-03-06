@@ -58,7 +58,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     ingredients = RecipeIngredientsSerializer(
-        source='recipe_ingredients',
+        #source='recipe_ingredients',
         many=True,
     )
     image = Base64ImageField(
@@ -76,7 +76,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def validate(self, obj):
         """Валидация данных."""
 
-        ingredients = obj.pop('recipe_ingredients')
+        ingredients = obj.pop('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
                 'Отсутствуют ингридиенты')
@@ -164,14 +164,13 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Изменяет рецепт."""
 
         ingredients_data = validated_data.pop('ingredients')
-        super().update(instance, validated_data)
         RecipeIngredients.objects.filter(
             recipe=instance
         ).delete()
         self.add_ingredients(ingredients_data, instance)
         instance.save()
 
-        return instance
+        return super().update(instance, validated_data)
 
     #def update(self, instance, validated_data):
     #    ingredients = validated_data.pop('ingredients')
