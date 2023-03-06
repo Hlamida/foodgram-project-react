@@ -134,6 +134,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Фильтрация содержимого выводимого кверисета."""
 
         query_tags = self.request.query_params.getlist('tags')
+        query_author = self.request.query_params.get('author')
+
+        if 'author' in self.request.query_params:
+            return Recipe.objects.filter(
+                author=query_author, tags__slug__in=query_tags
+            ).distinct()
 
         if 'is_favorited' in self.request.query_params:
             return Recipe.objects.filter(
