@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from api.filters import IngredientsFilter, RecipesFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (FollowSerializer, RecipeGetSerialzer,
+from api.serializers import (FollowSerializer, RecipeGetSerializer,
                              IngredientSerializer,
                              RecipeListSerializer, TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
@@ -126,7 +126,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         """Выбор сериализатора."""
 
         if self.request.method == 'GET':
-            return RecipeGetSerialzer
+            return RecipeGetSerializer
 
         return RecipeListSerializer
 
