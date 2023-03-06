@@ -81,6 +81,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Валидация данных."""
 
         ingredients = obj.pop('recipe_ingredients')
+        if not ingredients:
+            raise serializers.ValidationError(
+                'Отсутствуют ингридиенты')
         ingredient_list = []
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(
