@@ -77,36 +77,36 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'name', 'image', 'text', 'cooking_time',
         )
 
-    #def validate(self, obj):
-    #    """Валидация данных."""
-#
-    #    ingredients = obj.pop('recipe_ingredients')
-    #    if not ingredients:
-    #        raise serializers.ValidationError(
-    #            'Отсутствуют ингридиенты')
-    #    ingredient_list = []
-    #    for ingredient_item in ingredients:
-    #        ingredient = get_object_or_404(
-    #            Ingredient,
-    #            id=ingredient_item['id']
-    #        )
-    #        if ingredient in ingredient_list:
-    #            raise serializers.ValidationError(
-    #                'Ингредиент уже добавлен'
-    #            )
-    #        ingredient_list.append(ingredient)
-    #    obj['ingredients'] = ingredients
-#
-    #    return obj
+    def validate(self, obj):
+        """Валидация данных."""
 
-    def validate(self, data):
-        ingredients = data.get('ingredients')
-        ingredient_id = [ingredient.get('id') for ingredient in ingredients]
-        if len(ingredient_id) != len(set(ingredient_id)):
+        ingredients = obj.pop('recipe_ingredients')
+        if not ingredients:
             raise serializers.ValidationError(
-                'Ингредиент можно добавить только 1 раз'
+                'Отсутствуют ингридиенты')
+        ingredient_list = []
+        for ingredient_item in ingredients:
+            ingredient = get_object_or_404(
+                Ingredient,
+                id=ingredient_item['id']
             )
-        return data
+            if ingredient in ingredient_list:
+                raise serializers.ValidationError(
+                    'Ингредиент уже добавлен'
+                )
+            ingredient_list.append(ingredient)
+        obj['ingredients'] = ingredients
+
+        return obj
+
+    #def validate(self, data):
+    #    ingredients = data.get('ingredients')
+    #    ingredient_id = [ingredient.get('id') for ingredient in ingredients]
+    #    if len(ingredient_id) != len(set(ingredient_id)):
+    #        raise serializers.ValidationError(
+    #            'Ингредиент можно добавить только 1 раз'
+    #        )
+    #    return data
 
     #def validate_ingredients(self, ingredients):
     #    ingredients_list = []
