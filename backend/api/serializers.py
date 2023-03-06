@@ -100,8 +100,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
         for ingredient in ingredients:
             if not ingredients:
-               raise serializers.ValidationError(
-                     'Отсутствуют ингридиенты')
+                raise serializers.ValidationError(
+                    'Отсутствуют ингридиенты'
+                )
             amount = ingredient.get('amount')
             ingredient_instance = get_object_or_404(
                 Ingredient,
