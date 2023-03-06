@@ -140,18 +140,18 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
         return recipe
 
-    #def update(self, instance, validated_data):
-    #    """Изменяет рецепт."""
-#
-    #    ingredients_data = validated_data.pop('ingredients')
-    #    super().update(instance, validated_data)
-    #    RecipeIngredients.objects.filter(
-    #        recipe=instance
-    #    ).delete()
-    #    self.add_ingredients(ingredients_data, instance)
-    #    instance.save()
-#
-    #    return instance
+    def update(self, instance, validated_data):
+        """Изменяет рецепт."""
+
+        ingredients_data = validated_data.pop('ingredients')
+        super().update(instance, validated_data)
+        RecipeIngredients.objects.filter(
+            recipe=instance
+        ).delete()
+        self.add_ingredients(ingredients_data, instance)
+        instance.save()
+
+        return instance
 
     #def update(self, instance, validated_data):
     #    instance.image = validated_data.get('image', instance.image)
@@ -167,13 +167,13 @@ class RecipeListSerializer(serializers.ModelSerializer):
     #    self.add_ingredients(validated_data.get('ingredients'), instance)
     #    instance.save()
     #    return instance
-    def update(self, instance, validated_data):
-        instance.tags.clear()
-        RecipeIngredients.objects.filter(recipe=instance).delete()
-        instance.tags.set(validated_data.pop('tags'))
-        ingredients = validated_data.pop('ingredients')
-        self.add_ingredients(instance, ingredients)
-        return super().update(instance, validated_data)
+    #def update(self, instance, validated_data):
+    #    instance.tags.clear()
+    #    RecipeIngredients.objects.filter(recipe=instance).delete()
+    #    instance.tags.set(validated_data.pop('tags'))
+    #    ingredients = validated_data.pop('ingredients')
+    #    self.add_ingredients(instance, ingredients)
+    #    return super().update(instance, validated_data)
 
     #def to_representation(self, instance):
     #    return RecipeGetSerialzer(instance, context={
