@@ -70,7 +70,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientsSerializer(
         #source='recipe_ingredients',
         many=True,
-        allow_empty=False,
+        #allow_empty=False,
     )
     image = Base64ImageField(
         max_length=None,
