@@ -31,21 +31,30 @@ class IngredientSerializer(serializers.ModelSerializer):
         read_only_fields = ('name',)
 
 
-class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    """Сериализатор ингредиентов для рецептов."""
+#class RecipeIngredientsSerializer(serializers.ModelSerializer):
+#    """Сериализатор ингредиентов для рецептов."""
+#
+#    #id = serializers.IntegerField()
+#    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+#    name = serializers.ReadOnlyField(
+#        source='ingredient.name',
+#    )
+#    measurement_unit = serializers.ReadOnlyField(
+#        source='ingredient.measurement_unit',
+#    )
+#
+#    class Meta:
+#        model = RecipeIngredients
+#        fields = ('id', 'name', 'measurement_unit', 'amount')
+#
 
-    #id = serializers.IntegerField()
+class RecipeIngredientsSerializer(serializers.ModelSerializer):
+
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-    name = serializers.ReadOnlyField(
-        source='ingredient.name',
-    )
-    measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit',
-    )
 
     class Meta:
         model = RecipeIngredients
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = ('id', 'amount')
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
@@ -61,6 +70,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientsSerializer(
         #source='recipe_ingredients',
         many=True,
+        allow_empty=False,
     )
     image = Base64ImageField(
         max_length=None,
