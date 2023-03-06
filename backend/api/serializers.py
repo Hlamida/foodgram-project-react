@@ -164,13 +164,14 @@ class RecipeListSerializer(serializers.ModelSerializer):
         """Изменяет рецепт."""
 
         ingredients_data = validated_data.pop('ingredients')
-        RecipeIngredients.objects.filter(
-            recipe=instance
-        ).delete()
+        super().update(instance, validated_data)
+        #RecipeIngredients.objects.filter(
+        #    recipe=instance
+        #).delete()
         self.add_ingredients(ingredients_data, instance)
         instance.save()
 
-        return super().update(instance, validated_data)
+        return instance
 
     #def update(self, instance, validated_data):
     #    ingredients = validated_data.pop('ingredients')
