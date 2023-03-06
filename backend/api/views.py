@@ -1,11 +1,10 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from api.filters import IngredientsFilter, RecipesFilter
+from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FollowSerializer, RecipeGetSerializer,
@@ -116,11 +115,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     """Работа с рецептами."""
 
     queryset = Recipe.objects.all()
-    #serializer_class = RecipeListSerializer
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPadgination
-    #filter_backends = [DjangoFilterBackend]
-    #search_fields = ('author',)
 
     def get_serializer_class(self):
         """Выбор сериализатора."""
