@@ -123,20 +123,35 @@ class RecipeListSerializer(serializers.ModelSerializer):
     #                'Количество ингредиента больше 0')
     #    return ingredients
 
-    def add_ingredients(self, ingredients, recipe):
-        """Добавляет ингредиенты."""
-
-        for ingredient in ingredients:
-            amount = ingredient.get('amount')
-            ingredient_instance = get_object_or_404(
-                Ingredient,
-                pk=ingredient['id'])
-            RecipeIngredients.objects.create(
-                recipe=recipe,
-                ingredient=ingredient_instance,
-                amount=amount
+    #def add_ingredients(self, ingredients, recipe):
+    #    """Добавляет ингредиенты."""
+#
+    #    for ingredient in ingredients:
+    #        amount = ingredient.get('amount')
+    #        ingredient_instance = get_object_or_404(
+    #            Ingredient,
+    #            pk=ingredient['id'])
+    #        RecipeIngredients.objects.create(
+    #            recipe=recipe,
+    #            ingredient=ingredient_instance,
+    #            amount=amount
+    #        )
+#
+    @staticmethod
+    def add_ingredients(ingredients, recipe):
+        try:
+            RecipeIngredients.objects.bulk_create(
+                [RecipeIngredients(
+                 recipe=recipe,
+                 ingredient=ingredient['id'],
+                 amount=ingredient['amount'])
+                 for ingredient in ingredients]
             )
-
+        except KeyError:
+            raise serializers.ValidationError(
+                'Укажите ингредиент'
+            )
+    
     def create(self, validated_data):
         """Сохраняет рецепт."""
 
@@ -191,11 +206,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
     #    ingredients = validated_data.pop('ingredients')
     #    self.add_ingredients(instance, ingredients)
     #    return super().update(instance, validated_data)
-
-    #def to_representation(self, instance):
-    #    return RecipeGetSerialzer(instance, context={
-    #        'request': self.context.get('request')
-    #    }).data
 
 
 class RecipeGetSerialzer(serializers.ModelSerializer):
