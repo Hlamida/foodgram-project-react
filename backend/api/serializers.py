@@ -223,6 +223,17 @@ class FollowSerializer(serializers.ModelSerializer):
         """Определение поля is_subscribed."""
 
         user = self.context.get('request').user
+
+        if user == obj:
+            raise serializers.ValidationError(
+                'Вы не можете подписаться на себя самого'
+            )
+
+        #if Follow.objects.filter(user=user, author=author).exists():
+        #    return Response({
+        #        'errors': f'Вы уже подписаны на {author}.'
+        #    }, status=status.HTTP_400_BAD_REQUEST)
+
         return user.follower.filter(author=obj).exists()
 
     def get_recipes(self, obj):
