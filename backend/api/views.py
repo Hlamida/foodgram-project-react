@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
 from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
@@ -32,9 +33,6 @@ class SubscribeViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         """Подписка на автора, удаление подписки."""
-
-        user = request.user
-        author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
             user = request.user
