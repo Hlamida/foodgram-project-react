@@ -34,9 +34,10 @@ class SubscribeViewSet(UserViewSet):
     def subscribe(self, request, id):
         """Подписка на автора, удаление подписки."""
 
+        user = request.user
+        author = get_object_or_404(User, id=id)
+
         if request.method == 'POST':
-            user = request.user
-            author = get_object_or_404(User, id=id)
 
             if user == author:
                 return Response(
