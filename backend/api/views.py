@@ -9,7 +9,7 @@ from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FollowSerializer, RecipeGetSerializer,
-                             IngredientSerializer,
+                             IngredientSerializer, RecipeCreateSerializer,
                              RecipeListSerializer, TagSerializer)
 from api.utils import add_or_delete, get_shopping_list
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
@@ -110,7 +110,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return RecipeGetSerializer
 
-        return RecipeListSerializer
+        return RecipeCreateSerializer
 
     def get_queryset(self):
         """Фильтрация содержимого выводимого кверисета."""
