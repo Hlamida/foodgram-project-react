@@ -214,9 +214,8 @@ class RecipeCreateSerializer(RecipeReadSerializer):
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
         RecipeIngredients.objects.filter(recipe=instance).delete()
-        self.add_tags_and_ingredients(instance, tags, ingredients)
+        self.add_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -225,7 +224,7 @@ class RecipeCreateSerializer(RecipeReadSerializer):
             context={'request': self.context.get('request')}
         )
         return serializer.data
-    
+
 
 class RecipeGetSerializer(serializers.ModelSerializer):
     """Сериализатор рецептов."""
