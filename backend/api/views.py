@@ -65,7 +65,6 @@ class SubscribeViewSet(UserViewSet):
         """Вывод списка подписок пользователя."""
 
         user = request.user
-        #queryset = [i.author for i in user.follower.all()]
         following_list = User.objects.filter(following__user=user)
         pages = self.paginate_queryset(following_list)
         serializer = FollowSerializer(
@@ -133,13 +132,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return Recipe.objects.filter(tags__slug__in=query_tags).distinct()
 
         return Recipe.objects.all()
-
-    #def perform_create(self, serializer):
-    #    """Передает сериализатору автора рецепта."""
-#
-    #    serializer.save(
-    #        author=self.request.user,
-    #    )
 
     @action(
         methods=['POST', 'DELETE'],
