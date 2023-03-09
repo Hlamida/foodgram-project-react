@@ -150,12 +150,13 @@ class RecipeListSerializer(RecipeGetSerializer):
             )
 
     def create(self, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-        recipe = Recipe.objects.create(
-            author=self.context['request'].user, **validated_data
-        )
-        self.add_tags_and_ingredients(recipe, tags, ingredients)
+        image = validated_data.pop('image')
+        ingredients_data = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(image=image, **validated_data)
+        tags_data = self.initial_data.get('tags')
+        recipe.tags.set(tags_data)
+        self.add_ingredients(ingredients_data, recipe)
+
         return recipe
 
     def update(self, instance, validated_data):
