@@ -85,7 +85,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(
                 Ingredient,
-                id=ingredient_item['ingredients__id']
+                id=ingredient_item['id']
             )
             if ingredient in ingredient_list:
                 raise serializers.ValidationError(
@@ -107,7 +107,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             ingredient_instance = get_object_or_404(
                 Ingredient,
-                pk=ingredient['ingredients__id'])
+                pk=ingredient['id'])
             RecipeIngredients.objects.create(
                 recipe=recipe,
                 ingredient=ingredient_instance,
