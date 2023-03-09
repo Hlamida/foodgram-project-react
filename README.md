@@ -5,13 +5,11 @@
 
 ### Документация проекта:
 
-
 http://158.160.27.175/api/docs/redoc.html
 
 Адрес сервера 158.160.27.175
-
 Логин / пароль администратора: kulagin / kulagin
-
+      
 
 ### Предназначение проекта:
 
@@ -70,6 +68,7 @@ https://docs.docker.com/compose/install/
 ```
 sudo docker-compose exec -T backend python manage.py ingredients_download.py 
 ```
+
    
 ### Технологии:
 
