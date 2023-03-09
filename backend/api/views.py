@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
 from api.filters import IngredientsFilter
 from api.paginators import CustomPadgination
 from api.permissions import IsAuthorOrReadOnly
@@ -37,21 +38,6 @@ class SubscribeViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            user = request.user
-            author = get_object_or_404(User, id=id)
-
-            if user == author:
-                return Response(
-                    {'errors':
-                     'Подписка на себя запрещена конвенцией о нарциссизме'
-                     }, status=status.HTTP_400_BAD_REQUEST
-                )
-
-            if Follow.objects.filter(user=user, author=author).exists():
-                return Response({
-                    'errors': f'Вы уже подписаны на {author}.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-
             follow = Follow.objects.create(user=user, author=author)
             serializer = FollowSerializer(
                 follow.author, context={'request': request}
@@ -78,12 +64,9 @@ class SubscribeViewSet(UserViewSet):
     def subscriptions(self, request):
         """Вывод списка подписок пользователя."""
 
-        user = get_object_or_404(
-            User,
-            id=request.user.id
-        )
-        queryset = [i.author for i in user.follower.all()]
-        pages = self.paginate_queryset(queryset)
+        user = request.user
+        following_list = User.objects.filter(following__user=user)
+        pages = self.paginate_queryset(following_list)
         serializer = FollowSerializer(
             pages,
             many=True,
@@ -150,13 +133,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
         return Recipe.objects.all()
 
-    def perform_create(self, serializer):
-        """Передает сериализатору автора рецепта."""
-
-        serializer.save(
-            author=self.request.user,
-        )
-
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
@@ -176,6 +152,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в корзину или удаляет его."""
+
         return add_or_delete(request, Cart, pk)
 
     @action(

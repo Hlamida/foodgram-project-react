@@ -1,7 +1,8 @@
-from api.serializers import FavoritedSerializer
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+
+from api.serializers import FavoritedSerializer
 from recipes.models import Recipe, RecipeIngredients
 from rest_framework import status
 from rest_framework.response import Response

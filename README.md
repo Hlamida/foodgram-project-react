@@ -66,7 +66,7 @@ https://docs.docker.com/compose/install/
 
 6. Загрузить тестовую базу можно подключившись к терминалу сервера и выполнив команду: 
 ```
-sudo docker-compose exec -T web python manage.py loaddata fixtures.json 
+sudo docker-compose exec -T backend python manage.py ingredients_download.py 
 ```
 
    
