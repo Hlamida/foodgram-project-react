@@ -134,12 +134,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
         return Recipe.objects.all()
 
-    def perform_create(self, serializer):
-        """Передает сериализатору автора рецепта."""
-
-        serializer.save(
-            author=self.request.user,
-        )
+    #def perform_create(self, serializer):
+    #    """Передает сериализатору автора рецепта."""
+#
+    #    serializer.save(
+    #        author=self.request.user,
+    #    )
 
     @action(
         methods=['POST', 'DELETE'],
