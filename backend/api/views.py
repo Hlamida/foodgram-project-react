@@ -64,12 +64,10 @@ class SubscribeViewSet(UserViewSet):
     def subscriptions(self, request):
         """Вывод списка подписок пользователя."""
 
-        user = get_object_or_404(
-            User,
-            id=request.user.id
-        )
-        queryset = [i.author for i in user.follower.all()]
-        pages = self.paginate_queryset(queryset)
+        user = request.user
+        #queryset = [i.author for i in user.follower.all()]
+        following_list = User.objects.filter(following__user=user)
+        pages = self.paginate_queryset(following_list)
         serializer = FollowSerializer(
             pages,
             many=True,
