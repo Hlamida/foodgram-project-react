@@ -6,7 +6,11 @@
 ### Документация проекта:
 
 
-http://localhost/api/docs/
+http://158.160.27.175/api/docs/redoc.html
+
+Адрес сервера 158.160.27.175
+
+Логин / пароль администратора: kulagin / kulagin
 
 
 ### Предназначение проекта:
@@ -64,11 +68,8 @@ https://docs.docker.com/compose/install/
 
 6. Загрузить тестовую базу можно подключившись к терминалу сервера и выполнив команду: 
 ```
-sudo docker-compose exec -T web python manage.py loaddata fixtures.json 
+sudo docker-compose exec -T backend python manage.py ingredients_download.py 
 ```
-
-7. Адрес сервера 158.160.27.175
-   Логин / пароль администратора: kulagin / kulagin
    
 ### Технологии:
 

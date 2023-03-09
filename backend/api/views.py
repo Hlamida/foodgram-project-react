@@ -160,6 +160,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         """Добавляет рецепт в корзину или удаляет его."""
+
         return add_or_delete(request, Cart, pk)
 
     @action(

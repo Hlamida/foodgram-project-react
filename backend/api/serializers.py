@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers, status
+from rest_framework import serializers
 
 from recipes.models import (Cart, Favorite, Ingredient, Recipe,
                             RecipeIngredients, Tag)
-from users.models import Follow, User
+from users.models import Follow
 from users.serializers import UserSerializer
 
 
@@ -22,14 +22,9 @@ class TagSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиентов."""
 
-    #id = serializers.IntegerField()
-
     class Meta:
         model = Ingredient
-        fields = (
-            'id', 'name', 'measurement_unit',
-        )
-        read_only_fields = ('name',)
+        fields = '__all__'
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
@@ -69,8 +64,8 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     ingredients = RecipeIngredientsSerializer(
-        #source='recipe_ingredients',
         many=True,
+        source='recipe_ingredients'
     )
     image = Base64ImageField(
         max_length=None,
@@ -369,32 +364,30 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
 
-    def validate(self, data):
-        """Валидация данных."""
-
-        author_id = self.context.get(
-            'request').parser_context.get('kwargs').get('id')
-        author = get_object_or_404(User, id=author_id)
-        user = self.context.get('request').user
-        if user.follower.filter(author=author_id).exists():
-            raise serializers.ValidationError(
-                detail='Подписка уже существует',
-                code=status.HTTP_400_BAD_REQUEST,
-            )
-        if user == author:
-            raise serializers.ValidationError(
-                detail='Нельзя подписаться на самого себя',
-                code=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return data
-
     def get_is_subscribed(self, obj):
         """Определение поля is_subscribed."""
 
         user = self.context.get('request').user
 
+        #if Follow.objects.filter(user=user, author=author).exists():
+        #    return Response({
+        #        'errors': f'Вы уже подписаны на {author}.'
+        #    }, status=status.HTTP_400_BAD_REQUEST)
+
         return user.follower.filter(author=obj).exists()
+
+    def validate(self, data):
+        user = self.context.get('request').user
+        if user == data['user']:
+            raise serializers.ValidationError(
+                'Вы не можете подписаться на себя самого'
+            )
+        if user.follower.filter(author=data['user']).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на него.'
+            )
+
+        return data
 
     def get_recipes(self, obj):
         """Определение поля recipes."""
