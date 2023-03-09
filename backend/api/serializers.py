@@ -85,7 +85,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(
                 Ingredient,
-                id=ingredient_item['id']
+                id=ingredient_item['ingredient__id']
             )
             if ingredient in ingredient_list:
                 raise serializers.ValidationError(
@@ -107,7 +107,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             ingredient_instance = get_object_or_404(
                 Ingredient,
-                pk=ingredient['id'])
+                pk=ingredient['ingredient__id'])
             RecipeIngredients.objects.create(
                 recipe=recipe,
                 ingredient=ingredient_instance,
@@ -224,17 +224,25 @@ class FollowSerializer(serializers.ModelSerializer):
 
         user = self.context.get('request').user
 
-        if user == obj:
-            raise serializers.ValidationError(
-                'Вы не можете подписаться на себя самого'
-            )
-
         #if Follow.objects.filter(user=user, author=author).exists():
         #    return Response({
         #        'errors': f'Вы уже подписаны на {author}.'
         #    }, status=status.HTTP_400_BAD_REQUEST)
 
         return user.follower.filter(author=obj).exists()
+
+    def validate(self, data):
+        user = self.context.get('request').user
+        if user == data['user']:
+            raise serializers.ValidationError(
+                'Вы не можете подписаться на себя самого'
+            )
+        if user.follower.filter(author=data['user']).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на него.'
+            )
+
+        return data
 
     def get_recipes(self, obj):
         """Определение поля recipes."""

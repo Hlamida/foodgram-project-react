@@ -38,19 +38,6 @@ class SubscribeViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-
-            if user == author:
-                return Response(
-                    {'errors':
-                     'Подписка на себя запрещена конвенцией о нарциссизме'
-                     }, status=status.HTTP_400_BAD_REQUEST
-                )
-
-            if Follow.objects.filter(user=user, author=author).exists():
-                return Response({
-                    'errors': f'Вы уже подписаны на {author}.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-
             follow = Follow.objects.create(user=user, author=author)
             serializer = FollowSerializer(
                 follow.author, context={'request': request}
